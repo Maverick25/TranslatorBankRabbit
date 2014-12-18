@@ -47,8 +47,10 @@ public class Receive
             channel.queueBind(queueName, EXCHANGE_NAME, oneType);
         }
         
+        channel.basicQos(1);
+        
         QueueingConsumer consumer = new QueueingConsumer(channel);
-        channel.basicConsume(queueName, true, consumer);
+        channel.basicConsume(queueName, false, consumer);
 
         HashMap<String,Object> returnObjects = new HashMap<String,Object>();
         
