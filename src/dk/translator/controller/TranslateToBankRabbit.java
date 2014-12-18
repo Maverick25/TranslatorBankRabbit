@@ -42,9 +42,9 @@ public class TranslateToBankRabbit
 
             System.out.println(" [x] Received '" + routingKey + "':'" + message + "'");
             
-//            loanRequestDTO = gson.fromJson(message, LoanRequestDTO.class);
+            loanRequestDTO = gson.fromJson(message, LoanRequestDTO.class);
 
-//            sendMessage(loanRequestDTO);
+            sendMessage(loanRequestDTO);
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
         }
