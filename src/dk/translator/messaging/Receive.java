@@ -40,7 +40,7 @@ public class Receive
 //        channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
-        String[] types = new String[]{"small","medium","large","extralarge"};
+        String[] types = new String[]{"high"};
         
         for(String oneType : types)
         {    

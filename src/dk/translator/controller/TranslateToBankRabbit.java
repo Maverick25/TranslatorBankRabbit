@@ -47,7 +47,6 @@ public class TranslateToBankRabbit
 //            sendMessage(loanRequestDTO);
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
-         
         }
         
     }
