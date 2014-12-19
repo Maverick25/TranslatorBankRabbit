@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
+import dk.translator.dto.ConvertedLoanRequestDTO;
 import dk.translator.dto.LoanRequestDTO;
 import dk.translator.messaging.Receive;
 import dk.translator.messaging.Send;
@@ -33,6 +34,7 @@ public class TranslateToBankRabbit
         Channel channel = (Channel) objects.get("channel");
         
         LoanRequestDTO loanRequestDTO;
+        ConvertedLoanRequestDTO convertedLoanRequestDTO;
         
         while (true) 
         {
@@ -40,22 +42,30 @@ public class TranslateToBankRabbit
             String message = new String(delivery.getBody());
 
             AMQP.BasicProperties props = delivery.getProperties();
-            AMQP.BasicProperties replyProps = new AMQP.BasicProperties.Builder().correlationId(props.getCorrelationId()).build();         
+            AMQP.BasicProperties replyProps = new AMQP.BasicProperties.Builder().correlationId(props.getCorrelationId()).replyTo(REPLY_QUEUE_NAME).build();         
             
             String routingKey = delivery.getEnvelope().getRoutingKey();
 
             System.out.println(" [x] Received '" + routingKey + "':'" + message + "'");
             
             loanRequestDTO = gson.fromJson(message, LoanRequestDTO.class);
+            
+            StringBuilder sb = new StringBuilder(loanRequestDTO.getSsn());
+            sb.deleteCharAt(6);
+            long convertedSsn = Long.parseLong(sb.toString());
 
-            sendMessage(loanRequestDTO,replyProps);
+            convertedLoanRequestDTO = new ConvertedLoanRequestDTO(convertedSsn, loanRequestDTO.getCreditScore(), (int) loanRequestDTO.getLoanAmount(), loanRequestDTO.getLoanDuration());
+
+            System.out.println("Converted: "+convertedLoanRequestDTO.toString());
+
+            sendMessage(convertedLoanRequestDTO, replyProps);
 
             channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
         }
         
     }
     
-    public static void sendMessage(LoanRequestDTO dto, AMQP.BasicProperties props) throws IOException
+    public static void sendMessage(ConvertedLoanRequestDTO dto, AMQP.BasicProperties props) throws IOException
     {
         String message = gson.toJson(dto);
         
