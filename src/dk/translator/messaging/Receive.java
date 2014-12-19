@@ -21,7 +21,6 @@ public class Receive
 {
     
     private static final String EXCHANGE_NAME = "direct_logs";
-    private static final String TASK_QUEUE_NAME = "queue_translatorBankRabbit";
     private static Connection connection;
     private static Channel channel;
     
@@ -37,7 +36,6 @@ public class Receive
         channel.exchangeDeclare(EXCHANGE_NAME, "direct");
         String queueName = channel.queueDeclare().getQueue();
         
-//        channel.queueDeclare(TASK_QUEUE_NAME, true, false, false, null);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
         String[] types = new String[]{"high"};
@@ -46,8 +44,6 @@ public class Receive
         {    
             channel.queueBind(queueName, EXCHANGE_NAME, oneType);
         }
-        
-        channel.basicQos(1);
         
         QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(queueName, false, consumer);
