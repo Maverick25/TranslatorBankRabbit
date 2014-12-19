@@ -22,7 +22,7 @@ import java.util.HashMap;
 public class TranslateToBankRabbit 
 {
     private static Gson gson;
-    
+    private static final String REPLY_QUEUE_NAME = "queue_normalizerBankRabbit";
     public static void receiveMessages() throws IOException,InterruptedException
     {
         gson = new Gson();
